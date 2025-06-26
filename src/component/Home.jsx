@@ -65,50 +65,154 @@ const Home = () => {
 
         <section className="relative z-[200]">
           <header
-            className={`flex justify-between items-center px-6 pt-3 h-[5vh] transform transition-all duration-1000 ${
+            className={`flex justify-between items-center px-6 pt-3 h-[5vh] relative z-50 transform transition-all duration-1000 ${
               isVisible
                 ? "translate-y-0 opacity-100"
                 : "-translate-y-8 opacity-0"
             }`}
           >
-            <h1 className="text-white text-3xl font-serif hover:text-blue-400 transition-colors duration-300 cursor-pointer">
+            <h1 className="text-white text-3xl font-serif hover:text-purple-400 transition-colors duration-300 cursor-pointer">
               Emmanuel
             </h1>
             <div className="md:hidden">
               <button
                 onClick={toggleMenu}
-                className="text-white text-2xl hover:text-blue-400 transition-colors duration-300 transform hover:scale-110"
+                className="text-white text-2xl hover:text-purple-400 transition-all duration-300 transform hover:scale-110"
               >
                 <FaBars />
               </button>
             </div>
-            <div
-              className={`gap-10 md:flex transition-all duration-500 ${
-                menuOpen
-                  ? "flex flex-col fixed top-[8vh] right-4 bg-gray-800 backdrop-blur-sm p-4 rounded-xl z-[9999] border border-gray-700 shadow-2xl animate-in slide-in-from-top-2"
-                  : "hidden"
-              }`}
-            >
+            <div className="hidden md:flex gap-10">
               {["Home", "About", "Pages", "Blog", "Contact"].map(
                 (item, index) => (
                   <NavLink
                     key={item}
                     to={item === "Home" ? "/" : `/${item}`}
-                    className={`transition-all duration-300 hover:text-blue-400 hover:scale-105 transform ${
+                    className={`transition-all duration-300 hover:text-purple-400 hover:scale-105 transform relative group ${
                       item === "Home" ? "text-white" : "text-gray-400"
                     }`}
                     style={{ animationDelay: `${index * 100}ms` }}
                   >
                     {item}
+                    {/* Unique underline animation for active page */}
+                    {item === "Home" && (
+                      <div className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full"></div>
+                    )}
+                    <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full group-hover:w-full transition-all duration-300"></div>
                   </NavLink>
                 )
               )}
             </div>
+
+            {/* Enhanced Mobile Menu Dropdown */}
             {menuOpen && (
-              <div
-                className="fixed inset-0 bg-black/20 z-[9998]"
-                onClick={toggleMenu}
-              ></div>
+              <>
+                <div
+                  className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
+                  onClick={toggleMenu}
+                ></div>
+                <div className="fixed top-[70px] right-4 bg-gradient-to-br from-gray-800 via-gray-800 to-gray-900 backdrop-blur-lg p-8 rounded-2xl z-50 border border-purple-500/30 shadow-2xl shadow-purple-500/20 min-w-[220px] animate-in slide-in-from-top-4 duration-500">
+                  {/* Unique header for dropdown */}
+                  <div className="text-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mx-auto mb-3 flex items-center justify-center">
+                      <svg
+                        className="w-6 h-6 text-white"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-white font-semibold text-lg">
+                      Navigation
+                    </h3>
+                    <div className="w-16 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mt-2 rounded-full"></div>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    {["Home", "About", "Pages", "Blog", "Contact"].map(
+                      (item, index) => (
+                        <NavLink
+                          key={item}
+                          to={item === "Home" ? "/" : `/${item}`}
+                          className={`group relative transition-all duration-400 hover:text-purple-400 transform py-4 px-6 rounded-xl text-center overflow-hidden ${
+                            item === "Home"
+                              ? "text-white bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30"
+                              : "text-gray-400 hover:bg-gray-700/50"
+                          }`}
+                          style={{
+                            animationDelay: `${index * 150}ms`,
+                            transform: `translateY(${menuOpen ? "0" : "20px"})`,
+                            opacity: menuOpen ? 1 : 0,
+                            transition: `all 0.4s cubic-bezier(0.4, 0, 0.2, 1) ${
+                              index * 150
+                            }ms`,
+                          }}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {/* Unique hover effect background */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
+
+                          {/* Icon for each menu item */}
+                          <div className="flex items-center justify-center gap-3 relative z-10">
+                            {item === "Home" && (
+                              <span className="text-lg">🏠</span>
+                            )}
+                            {item === "About" && (
+                              <span className="text-lg">👨‍💻</span>
+                            )}
+                            {item === "Pages" && (
+                              <span className="text-lg">📄</span>
+                            )}
+                            {item === "Blog" && (
+                              <span className="text-lg">📝</span>
+                            )}
+                            {item === "Contact" && (
+                              <span className="text-lg">📧</span>
+                            )}
+                            <span className="font-medium group-hover:translate-x-1 transition-transform duration-300">
+                              {item}
+                            </span>
+                          </div>
+
+                          {/* Unique active indicator */}
+                          {item === "Home" && (
+                            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                          )}
+
+                          {/* Hover arrow */}
+                          <svg
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-purple-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5l7 7-7 7"
+                            />
+                          </svg>
+                        </NavLink>
+                      )
+                    )}
+                  </div>
+
+                  {/* Unique footer for dropdown */}
+                  <div className="mt-6 pt-4 border-t border-gray-700/50">
+                    <div className="flex justify-center gap-2">
+                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse delay-200"></div>
+                      <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-400"></div>
+                    </div>
+                  </div>
+
+                  {/* Unique decorative elements */}
+                  <div className="absolute top-2 right-2 w-1 h-1 bg-purple-400/50 rounded-full animate-ping"></div>
+                  <div className="absolute bottom-2 left-2 w-1 h-1 bg-pink-400/50 rounded-full animate-pulse"></div>
+                </div>
+              </>
             )}
           </header>
 
