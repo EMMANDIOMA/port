@@ -3,11 +3,13 @@
 import { BsPlayCircle, BsArrows, BsAlignEnd } from "react-icons/bs";
 import { NavLink } from "react-router-dom";
 import { FaBars } from "react-icons/fa6";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function About() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [experienceVisible, setExperienceVisible] = useState([]);
+  const experienceRef = useRef([]);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -17,6 +19,27 @@ export default function About() {
       setIsVisible(true);
     }, 200);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Intersection Observer for experience items
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number.parseInt(entry.target.dataset.index);
+            setExperienceVisible((prev) => [...prev, index]);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    experienceRef.current.forEach((item) => {
+      if (item) observer.observe(item);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const experienceData = [
@@ -273,8 +296,12 @@ the real reward. This journey deepened both my skills and purpose.`,
           {experienceData.map((item, index) => (
             <div
               key={index}
-              className={`flex gap-[30px] items-start justify-center group hover:translate-x-4 hover:scale-105 transition-all duration-700 transform cursor-pointer relative active:translate-x-4 active:scale-105 ${
-                isVisible
+              ref={(el) => (experienceRef.current[index] = el)}
+              data-index={index}
+              className={`flex gap-[30px] items-start justify-center transition-all duration-700 transform cursor-pointer relative ${
+                experienceVisible.includes(index)
+                  ? "translate-x-4 scale-105 opacity-100"
+                  : isVisible
                   ? "translate-y-0 opacity-100"
                   : "-translate-y-16 opacity-0"
               }`}
@@ -282,35 +309,87 @@ the real reward. This journey deepened both my skills and purpose.`,
                 transitionDelay: `${1300 + index * 300}ms`,
                 transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
               }}
-              onTouchStart={() => {}} // Enable touch interactions
-              onClick={() => {}} // Enable click interactions
             >
               {/* Animated background glow */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-teal-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"></div>
+              <div
+                className={`absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-teal-500/5 rounded-xl transition-opacity duration-500 -z-10 blur-xl ${
+                  experienceVisible.includes(index)
+                    ? "opacity-100"
+                    : "opacity-0"
+                }`}
+              ></div>
 
               {/* Enhanced icon section */}
               <div className="flex flex-col gap-1 mt-2 relative">
-                <div className="absolute -left-2 top-0 w-1 h-full bg-gradient-to-b from-blue-400 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                <BsArrows className="text-blue-400 group-hover:text-blue-300 transition-all duration-500 group-hover:scale-125 group-hover:rotate-12 transform" />
-                <BsAlignEnd className="text-blue-400 group-hover:text-blue-300 transition-all duration-500 group-hover:scale-125 group-hover:-rotate-12 transform delay-100" />
+                <div
+                  className={`absolute -left-2 top-0 w-1 h-full bg-gradient-to-b from-blue-400 to-purple-500 rounded-full transition-opacity duration-500 ${
+                    experienceVisible.includes(index)
+                      ? "opacity-100"
+                      : "opacity-0"
+                  }`}
+                ></div>
+                <BsArrows
+                  className={`text-blue-400 transition-all duration-500 transform ${
+                    experienceVisible.includes(index)
+                      ? "text-blue-300 scale-125 rotate-12"
+                      : ""
+                  }`}
+                />
+                <BsAlignEnd
+                  className={`text-blue-400 transition-all duration-500 transform delay-100 ${
+                    experienceVisible.includes(index)
+                      ? "text-blue-300 scale-125 -rotate-12"
+                      : ""
+                  }`}
+                />
 
                 {/* Pulsing dot */}
-                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse mt-2 group-hover:animate-bounce"></div>
+                <div
+                  className={`w-2 h-2 bg-blue-400 rounded-full mt-2 transition-all duration-300 ${
+                    experienceVisible.includes(index)
+                      ? "animate-bounce"
+                      : "animate-pulse"
+                  }`}
+                ></div>
               </div>
 
               {/* Enhanced content section */}
-              <div className="flex flex-col gap-3 flex-1 p-4 rounded-lg group-hover:bg-gray-700/30 transition-all duration-500">
-                <h1 className="text-2xl mt-2 group-hover:text-blue-400 transition-all duration-500 group-hover:translate-x-2 transform font-semibold">
+              <div
+                className={`flex flex-col gap-3 flex-1 p-4 rounded-lg transition-all duration-500 ${
+                  experienceVisible.includes(index) ? "bg-gray-700/30" : ""
+                }`}
+              >
+                <h1
+                  className={`text-2xl mt-2 transition-all duration-500 transform font-semibold ${
+                    experienceVisible.includes(index)
+                      ? "text-blue-400 translate-x-2"
+                      : ""
+                  }`}
+                >
                   {item.title}
                 </h1>
-                <p className="text-[#6c6d6e] group-hover:text-gray-300 transition-all duration-500 group-hover:translate-x-2 transform delay-75 font-medium">
+                <p
+                  className={`text-[#6c6d6e] transition-all duration-500 transform delay-75 font-medium ${
+                    experienceVisible.includes(index)
+                      ? "text-gray-300 translate-x-2"
+                      : ""
+                  }`}
+                >
                   {item.subtitle}
                 </p>
-                <p className="text-[#6c6d6e] group-hover:text-gray-300 transition-all duration-500 group-hover:translate-x-2 transform delay-150 leading-relaxed">
+                <p
+                  className={`text-[#6c6d6e] transition-all duration-500 transform delay-150 leading-relaxed ${
+                    experienceVisible.includes(index)
+                      ? "text-gray-300 translate-x-2"
+                      : ""
+                  }`}
+                >
                   {item.description.split("\n").map((line, lineIndex) => (
                     <span
                       key={lineIndex}
-                      className="inline-block group-hover:translate-x-1 transition-transform duration-300"
+                      className={`inline-block transition-transform duration-300 ${
+                        experienceVisible.includes(index) ? "translate-x-1" : ""
+                      }`}
                       style={{ transitionDelay: `${lineIndex * 50}ms` }}
                     >
                       {line}
@@ -322,11 +401,21 @@ the real reward. This journey deepened both my skills and purpose.`,
                 </p>
 
                 {/* Animated progress bar */}
-                <div className="w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-500 group-hover:w-full transition-all duration-1000 delay-200 rounded-full"></div>
+                <div
+                  className={`h-0.5 bg-gradient-to-r from-blue-400 to-purple-500 transition-all duration-1000 delay-200 rounded-full ${
+                    experienceVisible.includes(index) ? "w-full" : "w-0"
+                  }`}
+                ></div>
               </div>
 
               {/* Floating elements */}
-              <div className="absolute -top-2 -right-2 w-3 h-3 bg-blue-400/20 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-opacity duration-500"></div>
+              <div
+                className={`absolute -top-2 -right-2 w-3 h-3 bg-blue-400/20 rounded-full transition-opacity duration-500 ${
+                  experienceVisible.includes(index)
+                    ? "opacity-100 animate-ping"
+                    : "opacity-0"
+                }`}
+              ></div>
             </div>
           ))}
         </div>

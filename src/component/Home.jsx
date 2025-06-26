@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { FaGripLinesVertical, FaBars } from "react-icons/fa6";
 import { FaDev } from "react-icons/fa";
@@ -10,6 +10,8 @@ const Home = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [cardsVisible, setCardsVisible] = useState([]);
+  const cardsRef = useRef([]);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -19,6 +21,27 @@ const Home = () => {
       setIsVisible(true);
     }, 200);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Intersection Observer for service cards
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number.parseInt(entry.target.dataset.index);
+            setCardsVisible((prev) => [...prev, index]);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    cardsRef.current.forEach((card) => {
+      if (card) observer.observe(card);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const serviceCards = [
@@ -291,9 +314,11 @@ const Home = () => {
           {serviceCards.map((card, cardIndex) => (
             <div
               key={card.id}
-              className={`min-h-[35vh] pl-5 pt-3 pb-4 flex w-[90%] sm:w-[45%] md:w-[30%] lg:w-[15vw] sm:min-h-[40vh] md:min-h-[45vh] bg-[#252734] rounded-xl border border-gray-600 transition-all duration-700 group cursor-pointer transform ${
-                isVisible
-                  ? "translate-y-0 opacity-100"
+              ref={(el) => (cardsRef.current[cardIndex] = el)}
+              data-index={cardIndex}
+              className={`min-h-[35vh] pl-5 pt-3 pb-4 flex w-[90%] sm:w-[45%] md:w-[30%] lg:w-[15vw] sm:min-h-[40vh] md:min-h-[45vh] bg-[#252734] rounded-xl border border-gray-600 transition-all duration-700 cursor-pointer transform ${
+                cardsVisible.includes(cardIndex)
+                  ? "translate-y-0 opacity-100 scale-105 -translate-y-2 shadow-lg shadow-blue-500/20"
                   : cardIndex % 2 === 0
                   ? "-translate-y-16 opacity-0"
                   : "translate-y-16 opacity-0"
@@ -301,33 +326,66 @@ const Home = () => {
               style={{
                 transitionDelay: `${1100 + cardIndex * 250}ms`,
               }}
-              onTouchStart={() => {}} // Enable touch interactions
-              onClick={() => {}} // Enable click interactions
             >
               <div className="text-white flex flex-col gap-[9px] relative">
-                <p className="text-2xl text-blue-400 transition-all duration-300 transform">
+                <p
+                  className={`text-2xl text-blue-400 transition-all duration-300 transform ${
+                    cardsVisible.includes(cardIndex)
+                      ? "scale-125 rotate-12"
+                      : ""
+                  }`}
+                >
                   {card.icon}
                 </p>
-                <p className="text-white transition-colors duration-300 font-semibold text-lg">
+                <p
+                  className={`text-white transition-colors duration-300 font-semibold text-lg ${
+                    cardsVisible.includes(cardIndex) ? "text-blue-400" : ""
+                  }`}
+                >
                   {card.title}
                 </p>
 
                 {card.items.map((item, itemIndex) => (
                   <div
                     key={itemIndex}
-                    className={`flex items-start text-[grey] gap-2 hover:text-gray-300 transition-all duration-300 hover:translate-x-2 transform cursor-pointer py-1 active:translate-x-2 active:text-gray-300`}
+                    className={`flex items-start text-[grey] gap-2 transition-all duration-300 transform cursor-pointer py-1 ${
+                      cardsVisible.includes(cardIndex)
+                        ? "translate-x-2 text-gray-300"
+                        : ""
+                    }`}
                     style={{ transitionDelay: `${itemIndex * 50}ms` }}
-                    onTouchStart={() => {}} // Enable touch interactions
                   >
-                    <p className="hover:text-blue-400 transition-colors duration-300">
+                    <p
+                      className={`transition-colors duration-300 ${
+                        cardsVisible.includes(cardIndex) ? "text-blue-400" : ""
+                      }`}
+                    >
                       <MdKeyboardDoubleArrowRight />
                     </p>
-                    <span className="hover:text-white transition-colors duration-200 text-sm sm:text-base leading-relaxed">
+                    <span
+                      className={`transition-colors duration-200 text-sm sm:text-base leading-relaxed ${
+                        cardsVisible.includes(cardIndex) ? "text-white" : ""
+                      }`}
+                    >
                       {item}
                     </span>
                   </div>
                 ))}
               </div>
+
+              {/* Auto-show background glow */}
+              <div
+                className={`absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-teal-500/5 rounded-xl transition-opacity duration-500 -z-10 blur-xl ${
+                  cardsVisible.includes(cardIndex) ? "opacity-100" : "opacity-0"
+                }`}
+              ></div>
+
+              {/* Auto-show progress bar */}
+              <div
+                className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-teal-400 rounded-full transition-all duration-1000 ${
+                  cardsVisible.includes(cardIndex) ? "w-full" : "w-0"
+                }`}
+              ></div>
             </div>
           ))}
         </section>

@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 
 const Pages = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState(null);
+  const [cardsVisible, setCardsVisible] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const cardsRef = useRef([]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -19,6 +20,27 @@ const Pages = () => {
       setIsVisible(true);
     }, 100);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Intersection Observer for page cards
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number.parseInt(entry.target.dataset.index);
+            setCardsVisible((prev) => [...prev, index]);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    cardsRef.current.forEach((card) => {
+      if (card) observer.observe(card);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const pageItems = [
@@ -37,7 +59,7 @@ const Pages = () => {
           </svg>
         </div>
       ),
-      link: "/portfolio",
+      link: "",
       gradient: "from-purple-500/20 via-pink-500/20 to-purple-600/20",
     },
     {
@@ -59,7 +81,7 @@ const Pages = () => {
           </svg>
         </div>
       ),
-      link: "/testimonials",
+      link: "",
       gradient: "from-green-500/20 via-emerald-500/20 to-green-600/20",
     },
     {
@@ -81,7 +103,7 @@ const Pages = () => {
           </svg>
         </div>
       ),
-      link: "/resume",
+      link: "",
       gradient: "from-blue-500/20 via-cyan-500/20 to-blue-600/20",
     },
     {
@@ -103,7 +125,7 @@ const Pages = () => {
           </svg>
         </div>
       ),
-      link: "/certifications",
+      link: "",
       gradient: "from-yellow-500/20 via-orange-500/20 to-yellow-600/20",
     },
     {
@@ -117,7 +139,7 @@ const Pages = () => {
           </span>
         </div>
       ),
-      link: "/faq",
+      link: "",
       gradient: "from-teal-500/20 via-cyan-500/20 to-teal-600/20",
     },
     {
@@ -303,8 +325,12 @@ const Pages = () => {
             <NavLink
               key={item.id}
               to={item.link}
-              className={`group block relative overflow-hidden bg-gray-800 border border-gray-700 rounded-3xl p-8 transition-all duration-700 cursor-pointer transform hover:-translate-y-4 hover:scale-105 active:-translate-y-4 active:scale-105 ${
-                isVisible
+              ref={(el) => (cardsRef.current[index] = el)}
+              data-index={index}
+              className={`group block relative overflow-hidden bg-gray-800 border border-gray-700 rounded-3xl p-8 transition-all duration-700 cursor-pointer transform ${
+                cardsVisible.includes(index)
+                  ? "-translate-y-4 scale-105 opacity-100"
+                  : isVisible
                   ? "translate-y-0 opacity-100"
                   : "translate-y-16 opacity-0"
               }`}
@@ -312,38 +338,53 @@ const Pages = () => {
                 transitionDelay: `${700 + index * 150}ms`,
                 transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
               }}
-              onMouseEnter={() => setHoveredCard(item.id)}
-              onMouseLeave={() => setHoveredCard(null)}
-              onTouchStart={() => setHoveredCard(item.id)} // Enable touch interactions
-              onTouchEnd={() => setHoveredCard(null)} // Reset on touch end
             >
               {/* Animated background gradient */}
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl`}
+                className={`absolute inset-0 bg-gradient-to-br ${
+                  item.gradient
+                } transition-opacity duration-700 rounded-3xl ${
+                  cardsVisible.includes(index) ? "opacity-100" : "opacity-0"
+                }`}
               ></div>
 
               {/* Enhanced border glow effect */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10 blur-xl"></div>
+              <div
+                className={`absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-teal-500/20 transition-opacity duration-700 -z-10 blur-xl ${
+                  cardsVisible.includes(index) ? "opacity-100" : "opacity-0"
+                }`}
+              ></div>
 
               {/* Content container */}
               <div className="relative z-10">
                 {/* Icon with enhanced animations */}
-                <div className="mb-8 transform transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-2">
+                <div
+                  className={`mb-8 transform transition-all duration-500 ${
+                    cardsVisible.includes(index)
+                      ? "scale-110 -translate-y-2"
+                      : ""
+                  }`}
+                >
                   {item.icon}
                 </div>
 
                 {/* Title with staggered animation */}
-                <h3 className="text-3xl font-bold mb-4 group-hover:text-white transition-all duration-500 transform group-hover:translate-x-2 leading-tight">
+                <h3
+                  className={`text-3xl font-bold mb-4 transition-all duration-500 transform leading-tight ${
+                    cardsVisible.includes(index)
+                      ? "text-white translate-x-2"
+                      : ""
+                  }`}
+                >
                   {item.title.split(" ").map((word, wordIndex) => (
                     <span
                       key={wordIndex}
                       className="inline-block transition-transform duration-300"
                       style={{
                         transitionDelay: `${wordIndex * 100}ms`,
-                        transform:
-                          hoveredCard === item.id
-                            ? "translateY(-2px)"
-                            : "translateY(0)",
+                        transform: cardsVisible.includes(index)
+                          ? "translateY(-2px)"
+                          : "translateY(0)",
                       }}
                     >
                       {word}{" "}
@@ -352,15 +393,29 @@ const Pages = () => {
                 </h3>
 
                 {/* Description with enhanced animation */}
-                <p className="text-gray-400 text-lg leading-relaxed transition-all duration-500 group-hover:text-gray-300 transform group-hover:translate-x-2 mb-6">
+                <p
+                  className={`text-gray-400 text-lg leading-relaxed transition-all duration-500 transform mb-6 ${
+                    cardsVisible.includes(index)
+                      ? "text-gray-300 translate-x-2"
+                      : ""
+                  }`}
+                >
                   {item.description}
                 </p>
 
                 {/* Enhanced Read More Indicator */}
-                <div className="flex items-center text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-8 group-hover:translate-x-0">
+                <div
+                  className={`flex items-center text-blue-400 transition-all duration-500 transform ${
+                    cardsVisible.includes(index)
+                      ? "opacity-100 translate-x-0"
+                      : "opacity-0 translate-x-8"
+                  }`}
+                >
                   <span className="text-sm font-semibold mr-2">Explore</span>
                   <svg
-                    className="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-2"
+                    className={`w-5 h-5 transform transition-transform duration-300 ${
+                      cardsVisible.includes(index) ? "translate-x-2" : ""
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -375,12 +430,28 @@ const Pages = () => {
                 </div>
 
                 {/* Animated progress bar */}
-                <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-teal-400 rounded-full transition-all duration-700 group-hover:w-full w-0"></div>
+                <div
+                  className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-teal-400 rounded-full transition-all duration-700 ${
+                    cardsVisible.includes(index) ? "w-full" : "w-0"
+                  }`}
+                ></div>
               </div>
 
               {/* Floating particles on hover */}
-              <div className="absolute top-4 right-4 w-2 h-2 bg-blue-400/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-opacity duration-500"></div>
-              <div className="absolute bottom-4 left-4 w-1 h-1 bg-purple-400/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-700"></div>
+              <div
+                className={`absolute top-4 right-4 w-2 h-2 bg-blue-400/30 rounded-full transition-opacity duration-500 ${
+                  cardsVisible.includes(index)
+                    ? "opacity-100 animate-ping"
+                    : "opacity-0"
+                }`}
+              ></div>
+              <div
+                className={`absolute bottom-4 left-4 w-1 h-1 bg-purple-400/30 rounded-full transition-opacity duration-700 ${
+                  cardsVisible.includes(index)
+                    ? "opacity-100 animate-pulse"
+                    : "opacity-0"
+                }`}
+              ></div>
             </NavLink>
           ))}
         </div>

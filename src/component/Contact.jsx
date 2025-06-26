@@ -11,7 +11,9 @@ const Contact = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedField, setFocusedField] = useState(null);
+  const [contactVisible, setContactVisible] = useState([]);
   const form = useRef();
+  const contactRef = useRef([]);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -21,6 +23,27 @@ const Contact = () => {
       setIsVisible(true);
     }, 200);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Intersection Observer for contact items
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number.parseInt(entry.target.dataset.index);
+            setContactVisible((prev) => [...prev, index]);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    contactRef.current.forEach((item) => {
+      if (item) observer.observe(item);
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const sendEmail = (e) => {
@@ -265,33 +288,63 @@ const Contact = () => {
             {contactInfo.map((contact, index) => (
               <div
                 key={index}
-                className={`group transform transition-all duration-700 hover:translate-x-4 hover:scale-105 active:translate-x-4 active:scale-105 ${
-                  isVisible
+                ref={(el) => (contactRef.current[index] = el)}
+                data-index={index}
+                className={`group transform transition-all duration-700 ${
+                  contactVisible.includes(index)
+                    ? "translate-x-4 scale-105 opacity-100"
+                    : isVisible
                     ? "translate-y-0 opacity-100"
                     : "translate-y-12 opacity-0"
                 }`}
                 style={{ transitionDelay: contact.delay }}
-                onTouchStart={() => {}} // Enable touch interactions
               >
                 {contact.href ? (
                   <a
                     href={contact.href}
-                    className="flex items-center gap-6 p-4 rounded-xl hover:bg-gray-700/50 active:bg-gray-700/50 transition-all duration-300 cursor-pointer relative overflow-hidden"
-                    onTouchStart={() => {}} // Enable touch interactions
+                    className={`flex items-center gap-6 p-4 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                      contactVisible.includes(index) ? "bg-gray-700/50" : ""
+                    }`}
                   >
                     {/* Animated background glow */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#00df9a]/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-r from-[#00df9a]/10 to-teal-500/10 transition-opacity duration-500 rounded-xl ${
+                        contactVisible.includes(index)
+                          ? "opacity-100"
+                          : "opacity-0"
+                      }`}
+                    ></div>
 
-                    <div className="relative z-10 p-3 bg-gray-700 rounded-full group-hover:bg-[#00df9a]/20 transition-all duration-300">
-                      {contact.icon}
+                    <div
+                      className={`relative z-10 p-3 bg-gray-700 rounded-full transition-all duration-300 ${
+                        contactVisible.includes(index) ? "bg-[#00df9a]/20" : ""
+                      }`}
+                    >
+                      <div
+                        className={`transition-all duration-300 ${
+                          contactVisible.includes(index)
+                            ? "scale-125 rotate-12"
+                            : ""
+                        }`}
+                      >
+                        {contact.icon}
+                      </div>
                     </div>
-                    <span className="text-lg group-hover:text-[#00df9a] transition-colors duration-300 relative z-10">
+                    <span
+                      className={`text-lg transition-colors duration-300 relative z-10 ${
+                        contactVisible.includes(index) ? "text-[#00df9a]" : ""
+                      }`}
+                    >
                       {contact.text}
                     </span>
 
                     {/* Hover arrow */}
                     <svg
-                      className="w-5 h-5 text-[#00df9a] opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300 ml-auto"
+                      className={`w-5 h-5 text-[#00df9a] transition-all duration-300 ml-auto ${
+                        contactVisible.includes(index)
+                          ? "opacity-100 translate-x-2"
+                          : "opacity-0"
+                      }`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -305,13 +358,37 @@ const Contact = () => {
                     </svg>
                   </a>
                 ) : (
-                  <div className="flex items-center gap-6 p-4 rounded-xl hover:bg-gray-700/50 transition-all duration-300 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#00df9a]/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
+                  <div
+                    className={`flex items-center gap-6 p-4 rounded-xl transition-all duration-300 relative overflow-hidden ${
+                      contactVisible.includes(index) ? "bg-gray-700/50" : ""
+                    }`}
+                  >
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-r from-[#00df9a]/10 to-teal-500/10 transition-opacity duration-500 rounded-xl ${
+                        contactVisible.includes(index)
+                          ? "opacity-100"
+                          : "opacity-0"
+                      }`}
+                    ></div>
 
-                    <div className="relative z-10 p-3 bg-gray-700 rounded-full group-hover:bg-[#00df9a]/20 transition-all duration-300">
-                      {contact.icon}
+                    <div
+                      className={`relative z-10 p-3 bg-gray-700 rounded-full transition-all duration-300 ${
+                        contactVisible.includes(index) ? "bg-[#00df9a]/20" : ""
+                      }`}
+                    >
+                      <div
+                        className={`transition-all duration-300 ${
+                          contactVisible.includes(index) ? "scale-125" : ""
+                        }`}
+                      >
+                        {contact.icon}
+                      </div>
                     </div>
-                    <span className="text-lg group-hover:text-[#00df9a] transition-colors duration-300 relative z-10">
+                    <span
+                      className={`text-lg transition-colors duration-300 relative z-10 ${
+                        contactVisible.includes(index) ? "text-[#00df9a]" : ""
+                      }`}
+                    >
                       {contact.text}
                     </span>
                   </div>
@@ -340,7 +417,6 @@ const Contact = () => {
                 required
                 onFocus={() => setFocusedField("name")}
                 onBlur={() => setFocusedField(null)}
-                onTouchStart={() => setFocusedField("name")} // Enable touch focus
                 className={`w-full p-4 rounded-xl bg-gray-800 text-white border transition-all duration-300 focus:outline-none focus:scale-105 ${
                   focusedField === "name"
                     ? "border-[#00df9a] shadow-lg shadow-[#00df9a]/20"

@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { FaBars, FaCalendarAlt, FaClock, FaTag } from "react-icons/fa";
 
 const Blog = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [hoveredPost, setHoveredPost] = useState(null);
+  const [postsVisible, setPostsVisible] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const postsRef = useRef([]);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
@@ -20,12 +21,33 @@ const Blog = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Intersection Observer for blog posts
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = Number.parseInt(entry.target.dataset.index);
+            setPostsVisible((prev) => [...prev, index]);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    postsRef.current.forEach((post) => {
+      if (post) observer.observe(post);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   const blogPosts = [
     {
       id: 1,
       title: "How I Became a Front-End Developer & Instructor",
       description: "Follow my journey into web development and teaching.",
-      link: "/blog/frontend-developer-journey",
+      link: "",
       category: "Career",
       date: "Dec 15, 2024",
       readTime: "5 min read",
@@ -35,7 +57,7 @@ const Blog = () => {
       id: 2,
       title: "Understanding the Box Model in CSS (Made Simple)",
       description: "A beginner-friendly guide to mastering the CSS box model.",
-      link: "/blog/css-box-model-guide",
+      link: "",
       category: "Tutorial",
       date: "Dec 12, 2024",
       readTime: "8 min read",
@@ -45,7 +67,7 @@ const Blog = () => {
       id: 3,
       title: "What I Teach at Learn Factory: From HTML to React",
       description: "An overview of the front end skills I cover in my courses",
-      link: "/blog/learn-factory-curriculum",
+      link: "",
       category: "Education",
       date: "Dec 10, 2024",
       readTime: "6 min read",
@@ -56,7 +78,7 @@ const Blog = () => {
       title: "How I Stay Motivated as a Developer and Teacher",
       description:
         "My strategies for keeping passion alive in both coding and teaching",
-      link: "/blog/staying-motivated-developer",
+      link: "",
       category: "Career",
       date: "Dec 8, 2024",
       readTime: "7 min read",
@@ -67,7 +89,7 @@ const Blog = () => {
       title: "Building My Portfolio: Step-by-Step",
       description:
         "A look into the process of designing and developing my portfolio site",
-      link: "/blog/building-portfolio-guide",
+      link: "",
       category: "Tutorial",
       date: "Dec 5, 2024",
       readTime: "10 min read",
@@ -78,7 +100,7 @@ const Blog = () => {
       title: "Frontend Development Trends to Watch",
       description:
         "Key trends and technologies shaping the future of front-end development",
-      link: "/blog/frontend-trends-2024",
+      link: "",
       category: "Trends",
       date: "Dec 1, 2024",
       readTime: "12 min read",
@@ -325,7 +347,6 @@ const Blog = () => {
                       : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white active:bg-gray-700 active:text-white"
                   }`}
                   style={{ animationDelay: `${index * 100}ms` }}
-                  onTouchStart={() => {}} // Enable touch interactions
                 >
                   {category}
                 </button>
@@ -333,14 +354,18 @@ const Blog = () => {
             </div>
           </div>
 
-          {/* Enhanced Blog Posts Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Enhanced Blog Posts Grid - Updated padding and gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 px-2 sm:px-0">
             {filteredPosts.map((post, index) => (
               <NavLink
                 key={post.id}
                 to={post.link}
-                className={`group block relative overflow-hidden bg-gray-800 border border-gray-700 rounded-3xl p-8 transition-all duration-700 cursor-pointer transform hover:-translate-y-4 hover:scale-105 active:-translate-y-4 active:scale-105 ${
-                  isVisible
+                ref={(el) => (postsRef.current[index] = el)}
+                data-index={index}
+                className={`group block relative overflow-hidden bg-gray-800 border border-gray-700 rounded-3xl p-4 sm:p-6 md:p-8 transition-all duration-700 cursor-pointer transform ${
+                  postsVisible.includes(index)
+                    ? "-translate-y-4 scale-105 opacity-100"
+                    : isVisible
                     ? "translate-y-0 opacity-100"
                     : "translate-y-16 opacity-0"
                 }`}
@@ -348,51 +373,60 @@ const Blog = () => {
                   transitionDelay: `${900 + index * 150}ms`,
                   transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
                 }}
-                onMouseEnter={() => setHoveredPost(post.id)}
-                onMouseLeave={() => setHoveredPost(null)}
-                onTouchStart={() => setHoveredPost(post.id)} // Enable touch interactions
-                onTouchEnd={() => setHoveredPost(null)} // Reset on touch end
               >
                 {/* Animated background gradient */}
                 <div
-                  className={`absolute inset-0 bg-gradient-to-br ${post.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl`}
+                  className={`absolute inset-0 bg-gradient-to-br ${
+                    post.gradient
+                  } transition-opacity duration-700 rounded-3xl ${
+                    postsVisible.includes(index) ? "opacity-100" : "opacity-0"
+                  }`}
                 ></div>
 
                 {/* Enhanced border glow effect */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10 blur-xl"></div>
+                <div
+                  className={`absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-teal-500/20 transition-opacity duration-700 -z-10 blur-xl ${
+                    postsVisible.includes(index) ? "opacity-100" : "opacity-0"
+                  }`}
+                ></div>
 
                 {/* Content container */}
                 <div className="relative z-10">
-                  {/* Category and Meta Info */}
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm font-medium">
+                  {/* Category and Meta Info - Updated for better responsive layout */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
+                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm font-medium w-fit">
                       <FaTag className="inline mr-1" />
                       {post.category}
                     </span>
-                    <div className="flex items-center gap-4 text-gray-400 text-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-gray-400 text-xs sm:text-sm">
                       <span className="flex items-center gap-1">
-                        <FaCalendarAlt />
-                        {post.date}
+                        <FaCalendarAlt className="text-xs" />
+                        <span className="truncate">{post.date}</span>
                       </span>
                       <span className="flex items-center gap-1">
-                        <FaClock />
-                        {post.readTime}
+                        <FaClock className="text-xs" />
+                        <span className="truncate">{post.readTime}</span>
                       </span>
                     </div>
                   </div>
 
-                  {/* Title with enhanced animation */}
-                  <h3 className="text-2xl md:text-3xl font-bold mb-4 group-hover:text-white transition-all duration-500 transform group-hover:translate-x-2 leading-tight">
+                  {/* Title with enhanced animation - Updated for better responsive text */}
+                  <h3
+                    className={`text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4 transition-all duration-500 transform leading-tight ${
+                      postsVisible.includes(index)
+                        ? "text-white translate-x-2"
+                        : ""
+                    }`}
+                  >
                     {post.title.split(" ").map((word, wordIndex) => (
                       <span
                         key={wordIndex}
-                        className="inline-block transition-transform duration-300"
+                        className={`inline-block transition-transform duration-300`}
                         style={{
                           transitionDelay: `${wordIndex * 100}ms`,
-                          transform:
-                            hoveredPost === post.id
-                              ? "translateY(-2px)"
-                              : "translateY(0)",
+                          transform: postsVisible.includes(index)
+                            ? "translateY(-2px)"
+                            : "translateY(0)",
                         }}
                       >
                         {word}{" "}
@@ -400,18 +434,32 @@ const Blog = () => {
                     ))}
                   </h3>
 
-                  {/* Description with enhanced animation */}
-                  <p className="text-gray-400 text-lg leading-relaxed transition-all duration-500 group-hover:text-gray-300 transform group-hover:translate-x-2 mb-6">
+                  {/* Description with enhanced animation - Updated for better responsive text */}
+                  <p
+                    className={`text-gray-400 text-sm sm:text-base md:text-lg leading-relaxed transition-all duration-500 transform mb-4 sm:mb-6 ${
+                      postsVisible.includes(index)
+                        ? "text-gray-300 translate-x-2"
+                        : ""
+                    }`}
+                  >
                     {post.description}
                   </p>
 
                   {/* Enhanced Read More Indicator */}
-                  <div className="flex items-center text-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-8 group-hover:translate-x-0">
-                    <span className="text-sm font-semibold mr-2">
+                  <div
+                    className={`flex items-center text-blue-400 transition-all duration-500 transform ${
+                      postsVisible.includes(index)
+                        ? "opacity-100 translate-x-0"
+                        : "opacity-0 translate-x-8"
+                    }`}
+                  >
+                    <span className="text-xs sm:text-sm font-semibold mr-2">
                       Read Article
                     </span>
                     <svg
-                      className="w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-2"
+                      className={`w-4 h-4 sm:w-5 sm:h-5 transform transition-transform duration-300 ${
+                        postsVisible.includes(index) ? "translate-x-2" : ""
+                      }`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -426,12 +474,28 @@ const Blog = () => {
                   </div>
 
                   {/* Animated progress bar */}
-                  <div className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-teal-400 rounded-full transition-all duration-700 group-hover:w-full w-0"></div>
+                  <div
+                    className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-teal-400 rounded-full transition-all duration-700 ${
+                      postsVisible.includes(index) ? "w-full" : "w-0"
+                    }`}
+                  ></div>
                 </div>
 
                 {/* Floating particles on hover */}
-                <div className="absolute top-4 right-4 w-2 h-2 bg-blue-400/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-ping transition-opacity duration-500"></div>
-                <div className="absolute bottom-4 left-4 w-1 h-1 bg-purple-400/30 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-700"></div>
+                <div
+                  className={`absolute top-4 right-4 w-2 h-2 bg-blue-400/30 rounded-full transition-opacity duration-500 ${
+                    postsVisible.includes(index)
+                      ? "opacity-100 animate-ping"
+                      : "opacity-0"
+                  }`}
+                ></div>
+                <div
+                  className={`absolute bottom-4 left-4 w-1 h-1 bg-purple-400/30 rounded-full transition-opacity duration-700 ${
+                    postsVisible.includes(index)
+                      ? "opacity-100 animate-pulse"
+                      : "opacity-0"
+                  }`}
+                ></div>
               </NavLink>
             ))}
           </div>
