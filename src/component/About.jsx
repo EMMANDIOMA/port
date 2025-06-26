@@ -30,8 +30,8 @@ export default function About() {
           <NavLink to={"/About"} className="text-[white]">
             About
           </NavLink>
-          <NavLink className="text-[grey]">Pages</NavLink>
-          <NavLink className="text-[grey]">Blog</NavLink>
+          <NavLink to={"/Pages"} className="text-[grey]">Pages</NavLink>
+          <NavLink to={"/Blog"} className="text-[grey]">Blog</NavLink>
           <NavLink to={"/Contact"} className="text-[grey]">
             Contact
           </NavLink>

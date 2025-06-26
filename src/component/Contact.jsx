@@ -56,8 +56,12 @@ const Contact = () => {
           <NavLink to={"/About"} className="text-[grey]">
             About
           </NavLink>
-          <NavLink className="text-[grey]">Pages</NavLink>
-          <NavLink className="text-[grey]">Blog</NavLink>
+          <NavLink to={"/Pages"} className="text-[grey]">
+            Pages
+          </NavLink>
+          <NavLink to={"/Blog"} className="text-[grey]">
+            Blog
+          </NavLink>
           <NavLink to={"/Contact"} className="text-white">
             Contact
           </NavLink>
