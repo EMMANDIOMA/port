@@ -101,7 +101,7 @@ const Blog = () => {
     <>
       {/* Enhanced Navbar */}
       <header
-        className={`flex bg-gray-900 justify-between items-center px-6 pt-3 h-[5vh] relative z-50 transform transition-all duration-1000 ${
+        className={`flex bg-gray-900 justify-between items-center px-6 pt-3 h-[fit] relative z-50 transform transition-all duration-1000 ${
           isVisible ? "translate-y-0 opacity-100" : "-translate-y-8 opacity-0"
         }`}
       >
