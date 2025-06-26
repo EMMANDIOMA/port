@@ -273,7 +273,7 @@ the real reward. This journey deepened both my skills and purpose.`,
           {experienceData.map((item, index) => (
             <div
               key={index}
-              className={`flex gap-[30px] items-start justify-center group hover:translate-x-4 hover:scale-105 transition-all duration-700 transform cursor-pointer relative ${
+              className={`flex gap-[30px] items-start justify-center group hover:translate-x-4 hover:scale-105 transition-all duration-700 transform cursor-pointer relative active:translate-x-4 active:scale-105 ${
                 isVisible
                   ? "translate-y-0 opacity-100"
                   : "-translate-y-16 opacity-0"
@@ -282,6 +282,8 @@ the real reward. This journey deepened both my skills and purpose.`,
                 transitionDelay: `${1300 + index * 300}ms`,
                 transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
               }}
+              onTouchStart={() => {}} // Enable touch interactions
+              onClick={() => {}} // Enable click interactions
             >
               {/* Animated background glow */}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-teal-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl"></div>

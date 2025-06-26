@@ -265,17 +265,19 @@ const Contact = () => {
             {contactInfo.map((contact, index) => (
               <div
                 key={index}
-                className={`group transform transition-all duration-700 hover:translate-x-4 hover:scale-105 ${
+                className={`group transform transition-all duration-700 hover:translate-x-4 hover:scale-105 active:translate-x-4 active:scale-105 ${
                   isVisible
                     ? "translate-y-0 opacity-100"
                     : "translate-y-12 opacity-0"
                 }`}
                 style={{ transitionDelay: contact.delay }}
+                onTouchStart={() => {}} // Enable touch interactions
               >
                 {contact.href ? (
                   <a
                     href={contact.href}
-                    className="flex items-center gap-6 p-4 rounded-xl hover:bg-gray-700/50 transition-all duration-300 cursor-pointer relative overflow-hidden"
+                    className="flex items-center gap-6 p-4 rounded-xl hover:bg-gray-700/50 active:bg-gray-700/50 transition-all duration-300 cursor-pointer relative overflow-hidden"
+                    onTouchStart={() => {}} // Enable touch interactions
                   >
                     {/* Animated background glow */}
                     <div className="absolute inset-0 bg-gradient-to-r from-[#00df9a]/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-xl"></div>
@@ -338,6 +340,7 @@ const Contact = () => {
                 required
                 onFocus={() => setFocusedField("name")}
                 onBlur={() => setFocusedField(null)}
+                onTouchStart={() => setFocusedField("name")} // Enable touch focus
                 className={`w-full p-4 rounded-xl bg-gray-800 text-white border transition-all duration-300 focus:outline-none focus:scale-105 ${
                   focusedField === "name"
                     ? "border-[#00df9a] shadow-lg shadow-[#00df9a]/20"

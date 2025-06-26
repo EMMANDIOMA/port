@@ -319,12 +319,13 @@ const Blog = () => {
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 ${
+                  className={`px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 active:scale-105 ${
                     selectedCategory === category
                       ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white"
+                      : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-white active:bg-gray-700 active:text-white"
                   }`}
                   style={{ animationDelay: `${index * 100}ms` }}
+                  onTouchStart={() => {}} // Enable touch interactions
                 >
                   {category}
                 </button>
@@ -338,7 +339,7 @@ const Blog = () => {
               <NavLink
                 key={post.id}
                 to={post.link}
-                className={`group block relative overflow-hidden bg-gray-800 border border-gray-700 rounded-3xl p-8 transition-all duration-700 cursor-pointer transform hover:-translate-y-4 hover:scale-105 ${
+                className={`group block relative overflow-hidden bg-gray-800 border border-gray-700 rounded-3xl p-8 transition-all duration-700 cursor-pointer transform hover:-translate-y-4 hover:scale-105 active:-translate-y-4 active:scale-105 ${
                   isVisible
                     ? "translate-y-0 opacity-100"
                     : "translate-y-16 opacity-0"
@@ -349,6 +350,8 @@ const Blog = () => {
                 }}
                 onMouseEnter={() => setHoveredPost(post.id)}
                 onMouseLeave={() => setHoveredPost(null)}
+                onTouchStart={() => setHoveredPost(post.id)} // Enable touch interactions
+                onTouchEnd={() => setHoveredPost(null)} // Reset on touch end
               >
                 {/* Animated background gradient */}
                 <div

@@ -303,7 +303,7 @@ const Pages = () => {
             <NavLink
               key={item.id}
               to={item.link}
-              className={`group block relative overflow-hidden bg-gray-800 border border-gray-700 rounded-3xl p-8 transition-all duration-700 cursor-pointer transform hover:-translate-y-4 hover:scale-105 ${
+              className={`group block relative overflow-hidden bg-gray-800 border border-gray-700 rounded-3xl p-8 transition-all duration-700 cursor-pointer transform hover:-translate-y-4 hover:scale-105 active:-translate-y-4 active:scale-105 ${
                 isVisible
                   ? "translate-y-0 opacity-100"
                   : "translate-y-16 opacity-0"
@@ -314,6 +314,8 @@ const Pages = () => {
               }}
               onMouseEnter={() => setHoveredCard(item.id)}
               onMouseLeave={() => setHoveredCard(null)}
+              onTouchStart={() => setHoveredCard(item.id)} // Enable touch interactions
+              onTouchEnd={() => setHoveredCard(null)} // Reset on touch end
             >
               {/* Animated background gradient */}
               <div

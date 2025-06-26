@@ -301,6 +301,8 @@ const Home = () => {
               style={{
                 transitionDelay: `${1100 + cardIndex * 250}ms`,
               }}
+              onTouchStart={() => {}} // Enable touch interactions
+              onClick={() => {}} // Enable click interactions
             >
               <div className="text-white flex flex-col gap-[9px] relative">
                 <p className="text-2xl text-blue-400 transition-all duration-300 transform">
@@ -313,8 +315,9 @@ const Home = () => {
                 {card.items.map((item, itemIndex) => (
                   <div
                     key={itemIndex}
-                    className={`flex items-start text-[grey] gap-2 hover:text-gray-300 transition-all duration-300 hover:translate-x-2 transform cursor-pointer py-1`}
+                    className={`flex items-start text-[grey] gap-2 hover:text-gray-300 transition-all duration-300 hover:translate-x-2 transform cursor-pointer py-1 active:translate-x-2 active:text-gray-300`}
                     style={{ transitionDelay: `${itemIndex * 50}ms` }}
+                    onTouchStart={() => {}} // Enable touch interactions
                   >
                     <p className="hover:text-blue-400 transition-colors duration-300">
                       <MdKeyboardDoubleArrowRight />
