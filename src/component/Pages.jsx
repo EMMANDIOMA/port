@@ -168,10 +168,10 @@ const Pages = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gray-900 pb-6 text-white relative overflow-hidden">
       {/* Enhanced Navbar with Unique Dropdown */}
       <header
-        className={`flex justify-between items-center bg-gray-900 px-6 py-4 relative z-50 transform transition-all duration-1000 ${
+        className={`flex justify-between items-center bg-gray-900 px-6 py-4  relative z-50 transform transition-all duration-1000 ${
           isVisible ? "translate-y-0 opacity-100" : "-translate-y-8 opacity-0"
         }`}
       >
@@ -312,13 +312,13 @@ const Pages = () => {
         )}
       </header>
       {/* Enhanced animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute  inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-teal-500/5 to-blue-500/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-6xl  mx-auto relative pt-32 z-10">
         {/* Enhanced Grid Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-6 pb-16">
           {pageItems.map((item, index) => (
