@@ -61,7 +61,7 @@ const Portfolio = () => {
       title: "Fintech Website",
       description: "ideas turning into reality",
       category: "Personal",
-      technologies: ["React", "", "Tailwind CSS", "JavaScript"],
+      technologies: ["React", "HTML", "Tailwind CSS", "JavaScript"],
       liveUrl: "https://koinstack.vercel.app/",
       githubUrl: "https://github.com/EMMANDIOMA/koinstack",
       image: "",
