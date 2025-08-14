@@ -51,21 +51,20 @@ const Portfolio = () => {
       category: "Client Work",
       technologies: ["React", "JavaScript", "Tailwind CSS", "HTML"],
       liveUrl: "https://assignment-kohl-two.vercel.app/", // Add your assignment link here
-      githubUrl: "", // Add GitHub link if available
+      githubUrl: "https://github.com/EMMANDIOMA/new",
       image: "/screenshot.png",
       featured: true,
       gradient: "from-purple-500/20 via-pink-500/20 to-purple-600/20",
     },
     {
       id: 2,
-      title: "Portfolio Website",
-      description:
-        "Personal portfolio showcasing skills and projects with smooth animations and responsive design.",
+      title: "Fintech Website",
+      description: "ideas turning into reality",
       category: "Personal",
-      technologies: ["React", "Next.js", "Tailwind CSS", "JavaScript"],
-      liveUrl: "",
-      githubUrl: "",
-      image: "/portfolio-website-design.png",
+      technologies: ["React", "", "Tailwind CSS", "JavaScript"],
+      liveUrl: "https://koinstack.vercel.app/",
+      githubUrl: "https://github.com/EMMANDIOMA/koinstack",
+      image: "",
       featured: false,
       gradient: "from-blue-500/20 via-cyan-500/20 to-blue-600/20",
     },
