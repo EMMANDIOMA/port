@@ -8,6 +8,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Contact from "./component/Contact";
 import Pages from "./component/Pages";
 import Blog from "./component/Blog";
+import Portfolio from "./component/Portfolio";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/Contact" element={<Contact />} />
         <Route path="/Pages" element={<Pages />} />
         <Route path="/Blog" element={<Blog />} />
+        <Route path="/Portfolio" element={<Portfolio />} />
       </Routes>
     </>
   );

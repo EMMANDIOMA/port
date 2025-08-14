@@ -59,7 +59,7 @@ const Pages = () => {
           </svg>
         </div>
       ),
-      link: "",
+      link: "/Portfolio",
       gradient: "from-purple-500/20 via-pink-500/20 to-purple-600/20",
     },
     {

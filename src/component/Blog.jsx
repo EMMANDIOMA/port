@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { FaBars, FaCalendarAlt, FaClock, FaTag } from "react-icons/fa";
@@ -22,7 +20,6 @@ const Blog = () => {
   }, []);
 
   useEffect(() => {
-    // Intersection Observer for blog posts
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
